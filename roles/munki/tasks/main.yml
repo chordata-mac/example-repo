@@ -1,0 +1,21 @@
+---
+- name: install munki
+  osx: >
+    url=http://example.com/munkitools-2.2.4.2431.pkg
+    creates=/usr/local/munki
+    state=present
+  when: ansible_local.mac.has_munki != true
+
+- name: install munki preferences
+  template: >
+    src=ManagedInstalls.plist.j2
+    dest=/Library/Preferences/ManagedInstalls.plist
+    owner=root
+    group=wheel
+
+# this could also be in handlers
+- name: run munki
+  shell: >
+    /usr/local/munki/managedsoftwareupdate -a
+    &&
+    /usr/local/munki/managedsoftwareupdate --installwithnologout
